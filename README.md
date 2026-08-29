@@ -21,8 +21,6 @@ curl -sSL https://aka.ms/apm-unix | sh
 apm install dsissoko/apm-llm-wiki
 ```
 
-On Windows, install APM with `irm https://aka.ms/apm-windows | iex`, then run the same `apm install dsissoko/apm-llm-wiki` command from your project repository.
-
 ## Example with OpenCode
 
 Assuming OpenCode is already installed, open the project and initialize its wiki:
