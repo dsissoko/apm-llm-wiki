@@ -1,6 +1,11 @@
 # APM LLM Wiki
 
-APM-packaged implementation of Andrej Karpathy's **LLM Wiki** pattern for existing repositories.
+Turn any existing repository into a persistent, agent-maintained knowledge wiki.
+
+This project has two goals:
+
+1. **Implement Andrej Karpathy's LLM Wiki pattern** as a ready-to-use set of agent instructions, skills and workflows.
+2. **Make it trivial to install** in an existing repository as a package using Microsoft's [APM (Agent Package Manager)](https://github.com/microsoft/apm).
 
 > This project is an implementation and extension of the LLM Wiki pattern proposed by Andrej Karpathy. It is not affiliated with, endorsed by, or maintained by Andrej Karpathy.
 
