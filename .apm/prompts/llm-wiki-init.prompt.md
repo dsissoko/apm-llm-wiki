@@ -1,5 +1,5 @@
 ---
-description: Initialize or repair the LLM Wiki and optional QMD retrieval layer in the current repository.
+description: Initialize or repair the LLM Wiki and prepare its QMD retrieval layer in the current repository.
 ---
 
 # Initialize LLM Wiki
@@ -17,7 +17,7 @@ Inspect the repository for:
 - existing `docs/ontology/`
 - existing `docs/wiki/index.md`
 - existing `docs/wiki/log.md`
-- existing QMD configuration or collections
+- existing QMD collection/configuration for the wiki
 
 Do not overwrite existing project knowledge.
 
@@ -41,24 +41,22 @@ If `docs/wiki/log.md` is missing, create it as an append-only activity log and r
 
 Do not create `docs/ontology/ontology.md` merely to initialize the project. The bundled default ontology remains active until the project genuinely needs a specialization.
 
-## 3. Initialize QMD when available
+## 3. Prepare QMD for this wiki
 
-Check whether the `qmd` executable is available.
+QMD is provisioned through the APM package as an MCP dependency. Do not install QMD through npm, npx, or any other parallel installation path as part of this command.
 
-If QMD is not installed:
+Use the QMD capabilities available in the current agent/runtime environment to prepare retrieval for `docs/wiki/`.
 
-- do not fail the wiki initialization;
-- create the QMD runbook described below;
-- explain that QMD is optional and can be installed with `npm install -g @tobilu/qmd` (Node.js >= 22 is required by current QMD releases).
+When collection-management commands are available:
 
-If QMD is installed:
-
-1. inspect `qmd collection list` before mutating configuration;
+1. inspect existing QMD collections before mutating configuration;
 2. ensure there is a collection indexing `docs/wiki/` with a sensible repository-specific name;
 3. avoid creating duplicate collections for the same path;
-4. run `qmd update` after collection setup;
-5. run `qmd embed` to create semantic embeddings when practical;
-6. use `qmd status` or `qmd doctor` to verify the setup.
+4. refresh the index after collection setup;
+5. refresh semantic embeddings when supported and appropriate;
+6. verify that the wiki is discoverable through QMD.
+
+If the current MCP surface exposes retrieval but not collection-management operations, do not attempt to install another QMD instance. Complete the wiki bootstrap, record the expected `docs/wiki/` corpus in the runbook, and report the missing operational capability concisely.
 
 QMD is a derived local retrieval layer. Its index is disposable and must not become canonical project state.
 
@@ -68,14 +66,14 @@ Create or update `docs/wiki/runbooks/qmd.md` with project-specific operational k
 
 - what QMD is used for in this repository;
 - the exact indexed wiki path;
-- installation prerequisites and command;
-- how the collection is initialized;
-- `qmd update`;
-- `qmd embed`;
-- `qmd status` and `qmd doctor` diagnostics;
-- MCP usage through the installed APM package;
+- that QMD is provided through the APM/MCP setup;
+- how the wiki collection is initialized or identified;
+- how the QMD index and embeddings are refreshed when those operations are exposed;
+- how retrieval availability is verified;
 - the rule that Markdown and `docs/wiki/index.md` remain canonical;
 - when reindexing is needed after INGEST or substantial wiki changes.
+
+Do not document npm/npx installation instructions in this runbook.
 
 Keep this as wiki knowledge rather than creating a parallel `docs/how/` or unrelated runbook tree.
 
@@ -83,14 +81,14 @@ Keep this as wiki knowledge rather than creating a parallel `docs/how/` or unrel
 
 Update `docs/wiki/index.md` so the QMD runbook is discoverable.
 
-Append an INGEST or initialization entry to `docs/wiki/log.md` describing what was created, reused, or configured.
+Append an initialization entry to `docs/wiki/log.md` describing what was created, reused, or configured.
 
 Report concisely:
 
 - files created or reused;
-- whether QMD was available;
-- whether a QMD collection was created/reused;
-- whether indexing/embedding succeeded;
-- any remaining manual action.
+- whether QMD retrieval is available through the configured MCP;
+- whether a QMD collection was created or reused;
+- whether indexing/embedding refresh was available and succeeded;
+- any remaining operational limitation.
 
 Do not ask for confirmation for routine safe initialization choices. Ask only when an existing repository structure creates a genuinely ambiguous or destructive choice.
