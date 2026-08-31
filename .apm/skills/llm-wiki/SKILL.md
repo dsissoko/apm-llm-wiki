@@ -1,7 +1,7 @@
 ---
 name: llm-wiki
 description: "Build and maintain a persistent Markdown knowledge wiki inspired by Andrej Karpathy's LLM Wiki pattern. Use when ingesting input material, integrating knowledge into an existing wiki, querying accumulated knowledge, or linting the wiki for coherence."
-version: 0.1.0
+version: 1.0.0
 ---
 
 # llm-wiki
