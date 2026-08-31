@@ -2,6 +2,20 @@
 
 Turn any existing repository into a persistent, agent-maintained knowledge wiki.
 
+**Drop raw resources into `docs/input/`, then ask the agent to ingest the new inputs. The agent maintains `docs/wiki/` for you.** It synthesizes useful knowledge, preserves provenance, updates the wiki index, and records the ingestion. QMD indexing is automatic when the runtime supports the packaged `Stop` hook; on runtimes without hook support, run `/llm-wiki-index` explicitly after ingestion.
+
+```text
+Drop or create resources in docs/input/
+                ↓
+         Ask agent to INGEST
+                ↓
+         Agent maintains wiki
+                ↓
+           QMD indexing
+           ├─ Stop hook → automatic
+           └─ No hook   → /llm-wiki-index
+```
+
 This project has two goals:
 
 1. **Implement Andrej Karpathy's [LLM Wiki pattern](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)** as a ready-to-use set of agent instructions, skills and workflows.
@@ -70,7 +84,7 @@ docs/
         └── qmd.md
 ```
 
-`docs/wiki/` is the persistent synthesized knowledge base. `docs/input/` is the intake area for material not yet integrated. `docs/ontology/ontology.md` is optional; when absent, the bundled default ontology is used.
+`docs/input/` is the normal intake area for raw resources. `docs/wiki/` is the persistent synthesized knowledge base maintained by the agent. `docs/ontology/ontology.md` is optional; when absent, the bundled default ontology is used.
 
 ## Design principles
 
