@@ -22,9 +22,10 @@ previous_hash=""
 [[ "$current_hash" != "$previous_hash" ]] || exit 0
 
 # QMD operations are incremental: update the changed corpus, then generate
-# only missing embeddings.
-npx -y @tobilu/qmd update
-npx -y @tobilu/qmd embed
+# only missing embeddings. Keep stdout empty because Codex Stop hooks parse
+# stdout as structured hook output; send QMD diagnostics to stderr instead.
+npx -y @tobilu/qmd update >&2
+npx -y @tobilu/qmd embed >&2
 
 # Record the fingerprint only after both operations succeed.
 printf '%s\n' "$current_hash" > "$STATE_FILE"
