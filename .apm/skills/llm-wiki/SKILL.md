@@ -10,6 +10,10 @@ version: 1.0.0
 
 This skill defines the behavior for an LLM-maintained wiki: a persistent, human-readable knowledge base that accumulates synthesis over time instead of rediscovering the same input material on every query.
 
+The normal workflow is simple: users or agents place raw resources in `docs/input/`, then ask the agent to ingest the new inputs. The agent maintains `docs/wiki/` by synthesizing useful knowledge, preserving provenance, updating the index, and recording the ingestion. Users should not normally need to edit wiki pages directly.
+
+After the wiki changes, QMD synchronization is automatic when the current runtime supports the packaged `Stop` hook. On runtimes without hook support, run `/llm-wiki-index` explicitly.
+
 Input material remains available as evidence, while the wiki stores durable synthesized knowledge, explicit relationships, provenance, a navigable index, and an append-only activity log.
 
 The default conceptual model is defined in `references/default-ontology.md`.
@@ -49,9 +53,9 @@ Default paths:
 - `log_path`: `docs/wiki/log.md`
 - `ontology_path`: `docs/ontology/`
 
-`docs/input/` contains external or newly produced information that has not yet been integrated into the wiki ontology.
+`docs/input/` is the normal intake area for raw, external, or newly produced information that has not yet been synthesized into the wiki.
 
-`docs/wiki/` contains persistent synthesized knowledge maintained by this skill.
+`docs/wiki/` contains persistent synthesized knowledge maintained by this skill. It is normally maintained by the agent, not manually by the user.
 
 `docs/wiki/index.md` is the primary entry point. It must provide a concise catalog of wiki pages with links and short descriptions.
 
@@ -78,7 +82,7 @@ Any external search index must be treated as derived and rebuildable. It must no
 1. Ensure `docs/wiki/index.md` and `docs/wiki/log.md` exist.
 2. Read the active ontology.
 3. Read `docs/wiki/index.md` first.
-4. Inspect new input and identify the knowledge it contributes.
+4. Inspect new or changed material in `docs/input/` and identify the knowledge it contributes.
 5. Locate existing pages covering the same concepts or topics.
 6. Integrate into existing pages whenever possible.
 7. Create a new page only for genuinely new knowledge that deserves its own durable representation.
@@ -88,6 +92,8 @@ Any external search index must be treated as derived and rebuildable. It must no
 11. Append a concise INGEST log entry.
 
 Do not merely summarize each input into a new file.
+
+After INGEST changes `docs/wiki/`, do not manually run QMD synchronization when the current runtime supports the packaged `Stop` hook; the hook handles it automatically. If the runtime does not support the hook, run `/llm-wiki-index` explicitly.
 
 ### QUERY
 
