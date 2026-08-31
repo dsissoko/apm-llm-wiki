@@ -72,18 +72,6 @@ docs/
 
 `docs/wiki/` is the persistent synthesized knowledge base. `docs/input/` is the intake area for material not yet integrated. `docs/ontology/ontology.md` is optional; when absent, the bundled default ontology is used.
 
-## QMD
-
-QMD provides the derived search/index layer over the canonical Markdown wiki. APM exposes it through MCP via `npx`; the project-local `.qmd/` state is disposable and should be gitignored.
-
-Synchronization is incremental. On runtimes supporting APM hooks, the packaged `Stop` hook refreshes QMD only when `docs/wiki/` changed. Other runtimes can explicitly run:
-
-```text
-/llm-wiki-index
-```
-
-The `/llm-wiki-init` command only bootstraps the Markdown wiki; QMD initialization remains an explicit CLI setup step as shown above.
-
 ## Design principles
 
 - Markdown remains canonical and versionable in Git.
