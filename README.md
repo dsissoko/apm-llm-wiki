@@ -14,7 +14,7 @@ This project has two goals:
 Prerequisites:
 
 - Microsoft APM;
-- Node.js 22 or newer with npm, so the QMD MCP server can be launched through `npx` without a separate global QMD installation.
+- Node.js 22 or newer with npm/npx.
 
 Install this package in the repository you want to equip with an LLM Wiki:
 
@@ -26,13 +26,7 @@ curl -sSL https://aka.ms/apm-unix | sh
 apm install dsissoko/apm-llm-wiki
 ```
 
-QMD does not need to be installed globally. The package configures the MCP runtime to launch it with:
-
-```bash
-npx -y @tobilu/qmd mcp
-```
-
-`npx` downloads QMD when needed and reuses the npm cache on subsequent runs.
+QMD does not need to be installed globally. It is automatically resolved through `npx` when the MCP server starts.
 
 ## Example with OpenCode
 
@@ -96,6 +90,7 @@ The initialization command prepares QMD for the current wiki: it identifies `doc
 - Provenance and uncertainty are explicit.
 - `docs/wiki/index.md` remains the canonical navigation map.
 - QMD indexes are derived and rebuildable.
+- **QMD is runtime-managed, not globally installed.** APM configures the MCP integration; `npx` resolves and executes QMD on demand. QMD may be cached by npm, but no global `qmd` executable is required.
 - Initialization is idempotent and must not destroy existing project knowledge.
 
 ## Status
