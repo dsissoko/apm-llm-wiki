@@ -1,5 +1,5 @@
 ---
-description: Initialize or repair the LLM Wiki and prepare its QMD retrieval layer in the current repository.
+description: Initialize or repair the LLM Wiki structure in the current repository.
 ---
 
 # Initialize LLM Wiki
@@ -17,7 +17,7 @@ Inspect the repository for:
 - existing `docs/ontology/`
 - existing `docs/wiki/index.md`
 - existing `docs/wiki/log.md`
-- existing QMD collection/configuration for the wiki
+- existing `docs/wiki/runbooks/qmd.md`
 
 Do not overwrite existing project knowledge.
 
@@ -41,54 +41,38 @@ If `docs/wiki/log.md` is missing, create it as an append-only activity log and r
 
 Do not create `docs/ontology/ontology.md` merely to initialize the project. The bundled default ontology remains active until the project genuinely needs a specialization.
 
-## 3. Prepare QMD for this wiki
-
-QMD is provisioned through the APM package as an MCP dependency. Do not install QMD through npm, npx, or any other parallel installation path as part of this command.
-
-Use the QMD capabilities available in the current agent/runtime environment to prepare retrieval for `docs/wiki/`.
-
-When collection-management commands are available:
-
-1. inspect existing QMD collections before mutating configuration;
-2. ensure there is a collection indexing `docs/wiki/` with a sensible repository-specific name;
-3. avoid creating duplicate collections for the same path;
-4. refresh the index after collection setup;
-5. refresh semantic embeddings when supported and appropriate;
-6. verify that the wiki is discoverable through QMD.
-
-If the current MCP surface exposes retrieval but not collection-management operations, do not attempt to install another QMD instance. Complete the wiki bootstrap, record the expected `docs/wiki/` corpus in the runbook, and report the missing operational capability concisely.
-
-QMD is a derived local retrieval layer. Its index is disposable and must not become canonical project state.
-
-## 4. Persist the QMD runbook in the wiki
+## 3. Persist the QMD runbook in the wiki
 
 Create or update `docs/wiki/runbooks/qmd.md` with project-specific operational knowledge covering:
 
 - what QMD is used for in this repository;
-- the exact indexed wiki path;
-- that QMD is provided through the APM/MCP setup;
-- how the wiki collection is initialized or identified;
-- how the QMD index and embeddings are refreshed when those operations are exposed;
-- how retrieval availability is verified;
+- the indexed wiki path (`docs/wiki/`);
+- that QMD is exposed through the APM/MCP setup;
+- that QMD collection creation, indexing and embedding are initialized explicitly from the CLI before launching the agent runtime;
+- how retrieval availability can be verified;
 - the rule that Markdown and `docs/wiki/index.md` remain canonical;
 - when reindexing is needed after INGEST or substantial wiki changes.
 
-Do not document npm/npx installation instructions in this runbook.
+Do not create, modify, update or embed QMD collections as part of this prompt. QMD operational initialization is intentionally handled outside the agent prompt.
 
 Keep this as wiki knowledge rather than creating a parallel `docs/how/` or unrelated runbook tree.
+
+## 4. Verify retrieval if available
+
+If QMD retrieval is already exposed through the current MCP environment, verify non-destructively that the wiki is discoverable.
+
+If QMD retrieval is unavailable, report that fact concisely. Do not attempt to install QMD, create collections, run indexing, or generate embeddings.
 
 ## 5. Finish coherently
 
 Update `docs/wiki/index.md` so the QMD runbook is discoverable.
 
-Append an initialization entry to `docs/wiki/log.md` describing what was created, reused, or configured.
+Append an initialization entry to `docs/wiki/log.md` describing what was created or reused.
 
 Report concisely:
 
 - files created or reused;
 - whether QMD retrieval is available through the configured MCP;
-- whether a QMD collection was created or reused;
-- whether indexing/embedding refresh was available and succeeded;
 - any remaining operational limitation.
 
 Do not ask for confirmation for routine safe initialization choices. Ask only when an existing repository structure creates a genuinely ambiguous or destructive choice.
