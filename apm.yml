@@ -1,6 +1,6 @@
 name: apm-llm-wiki
 version: 1.0.0
-description: Bootstrap and operate an Andrej Karpathy-inspired persistent LLM Wiki in any repository.
+description: Operate an Andrej Karpathy-inspired persistent LLM Wiki in any repository.
 author: dsissoko
 license: MIT
 includes: auto
