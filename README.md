@@ -49,12 +49,11 @@ The package provides:
 
 - a reusable `llm-wiki` skill for INGEST / QUERY / LINT workflows;
 - a `/llm-wiki-init` command that bootstraps the wiki structure in the current repository;
+- a `/llm-wiki-index` command that explicitly refreshes the QMD index and embeddings;
 - project-wide wiki governance instructions so durable project knowledge is persisted through the wiki rather than scattered across ad-hoc documentation;
 - QMD exposed through MCP as the retrieval/indexing layer used by the wiki;
-- an APM-native `Stop` hook that automatically synchronizes QMD after agent activity when `docs/wiki/` actually changed;
+- an APM-native `Stop` hook that automatically synchronizes QMD after agent activity when `docs/wiki/` actually changed; agent runtimes that do not support APM hooks can trigger the same QMD refresh explicitly with `/llm-wiki-index`;
 - a project-local QMD index in `.qmd/`, with the `wiki` collection restricted to `docs/wiki/`. QMD may store an absolute local path in this configuration; `.qmd/` is machine-local state and should therefore be added to the consuming project's `.gitignore` rather than committed.
-
-The automatic synchronization hook is available only on agent runtimes for which APM supports hooks. Runtimes without APM hook support can still use the wiki and QMD MCP, but do not receive automatic QMD synchronization.
 
 ## What gets initialized
 
@@ -96,7 +95,11 @@ npx -y @tobilu/qmd embed
 
 Both QMD operations are incremental. The new fingerprint is recorded only after both operations complete successfully.
 
-The hook is distributed as an APM hook primitive rather than being implemented in the LLM prompt. Automatic synchronization therefore depends on the target runtime supporting APM hooks. OpenCode currently does not support APM hooks and is intentionally not given a runtime-specific workaround.
+The hook is distributed as an APM hook primitive rather than being implemented in the LLM prompt. Agent runtimes without APM hook support can explicitly synchronize QMD with:
+
+```text
+/llm-wiki-index
+```
 
 The `/llm-wiki-init` prompt does not create QMD collections or run indexing/embedding commands. Its responsibility is the Markdown wiki structure and project knowledge bootstrap.
 
@@ -113,9 +116,9 @@ QMD currently requires Node.js 22 or newer. If the MCP server fails to start, ve
 - **QMD is runtime-managed, not globally installed.** APM configures the MCP integration; `npx` resolves and executes QMD on demand. QMD may be cached by npm, but no global `qmd` executable is required.
 - **QMD state is repository-local and disposable.** `.qmd/` contains local configuration, the derived index and synchronization state, may contain machine-specific absolute paths, and should be gitignored.
 - **QMD initialization is explicit.** Local initialization, collection creation, indexing and embedding are performed with the documented CLI commands before launching the agent runtime.
-- **QMD synchronization is deterministic.** A supported APM runtime invokes the packaged `Stop` hook; the LLM is not responsible for deciding whether to update the QMD index.
+- **QMD synchronization is deterministic.** A supported APM runtime invokes the packaged `Stop` hook; runtimes without hook support can explicitly invoke `/llm-wiki-index`.
 - Wiki initialization is idempotent and must not destroy existing project knowledge.
 
 ## Status
 
-Early public V1. The initial scope is intentionally small: bootstrap, wiki governance, lifecycle skill, QMD retrieval, and deterministic QMD synchronization on APM hook-capable runtimes.
+Early public V1. The initial scope is intentionally small: bootstrap, wiki governance, lifecycle skill, QMD retrieval, and deterministic QMD synchronization.
