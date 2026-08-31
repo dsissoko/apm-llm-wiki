@@ -1,5 +1,5 @@
 name: apm-llm-wiki
-version: 0.1.0
+version: 0.1.1
 description: Bootstrap and operate an Andrej Karpathy-inspired persistent LLM Wiki in any repository.
 author: dsissoko
 license: MIT
@@ -11,7 +11,10 @@ dependencies:
     - name: qmd
       registry: false
       transport: stdio
-      command: qmd
-      args: ["mcp"]
+      command: npx
+      args:
+        - "-y"
+        - "@tobilu/qmd"
+        - "mcp"
 
 scripts: {}
