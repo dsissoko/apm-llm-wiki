@@ -45,19 +45,13 @@ npx -y @tobilu/qmd embed
 # 3. Launch your agent
 ```
 
-Then, inside your agent:
+After installation, initialize the wiki once from your agent:
 
 ```text
 /llm-wiki-init
 ```
 
-QMD does not need to be installed globally. APM configures the MCP integration and QMD is resolved through `npx` when needed.
-
-You can verify the local QMD collection and embeddings with:
-
-```bash
-npx -y @tobilu/qmd status
-```
+That's it. Enjoy your wiki by reading it directly or through your agent, which now has access to a fully organized and indexed knowledge base.
 
 The package provides:
 
