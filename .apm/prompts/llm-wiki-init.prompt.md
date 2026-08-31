@@ -48,10 +48,14 @@ Create or update `docs/wiki/runbooks/qmd.md` with project-specific operational k
 - what QMD is used for in this repository;
 - the indexed wiki path (`docs/wiki/`);
 - that QMD is exposed through the APM/MCP setup;
-- that QMD collection creation, indexing and embedding are initialized explicitly from the CLI before launching the agent runtime;
+- that QMD collection creation, initial indexing and embedding are initialized explicitly from the CLI before launching the agent runtime;
 - how retrieval availability can be verified;
 - the rule that Markdown and `docs/wiki/index.md` remain canonical;
-- when reindexing is needed after INGEST or substantial wiki changes.
+- the normal user workflow: place or create raw resources in `docs/input/`, then explicitly ask the agent to ingest the new inputs; the agent maintains `docs/wiki/`;
+- that after an INGEST changes `docs/wiki/`, QMD synchronization is automatic on runtimes that support the packaged APM `Stop` hook;
+- that runtimes without hook support must use `/llm-wiki-index` explicitly after INGEST.
+
+Do not describe manual editing of `docs/wiki/` as the normal workflow. Users should normally manage input material and let the agent maintain the wiki.
 
 Do not create, modify, update or embed QMD collections as part of this prompt. QMD operational initialization is intentionally handled outside the agent prompt.
 
