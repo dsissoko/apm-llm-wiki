@@ -1,5 +1,5 @@
 name: apm-llm-wiki
-version: 1.0.0
+version: 1.0.1
 description: Operate an Andrej Karpathy-inspired persistent LLM Wiki in any repository.
 author: dsissoko
 license: MIT
