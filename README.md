@@ -91,11 +91,8 @@ The `/llm-wiki-init` command only bootstraps the Markdown wiki; QMD initializati
 - Durable knowledge is synthesized instead of duplicated.
 - Provenance and uncertainty are explicit.
 - `docs/wiki/index.md` remains the canonical navigation map.
-- QMD indexes are derived and rebuildable.
-- **QMD is runtime-managed, not globally installed.** APM configures the MCP integration; `npx` resolves and executes QMD on demand. QMD may be cached by npm, but no global `qmd` executable is required.
-- **QMD state is repository-local and disposable.** `.qmd/` contains local configuration, the derived index and synchronization state, may contain machine-specific absolute paths, and should be gitignored.
-- **QMD initialization is explicit.** Local initialization, collection creation, indexing and embedding are performed with the documented CLI commands before launching the agent runtime.
-- **QMD synchronization is deterministic.** A supported APM runtime invokes the packaged `Stop` hook; runtimes without hook support can explicitly invoke `/llm-wiki-index`.
+- QMD is a derived, rebuildable search layer; its `.qmd/` state is local and disposable.
+- QMD synchronization is deterministic: automatic through the APM `Stop` hook when supported, otherwise explicit through `/llm-wiki-index`.
 - Wiki initialization is idempotent and must not destroy existing project knowledge.
 
 ## Status
