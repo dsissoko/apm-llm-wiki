@@ -20,7 +20,7 @@ From the repository you want to equip with an LLM Wiki:
 
 ```bash
 # 1. Install the APM package
-apm install dsissoko/apm-llm-wiki
+apm install dsissoko/apm-llm-wiki#v1.0.0
 
 # 2. Initialize the project-local QMD index
 npx -y @tobilu/qmd init
