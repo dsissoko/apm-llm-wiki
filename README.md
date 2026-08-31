@@ -74,36 +74,15 @@ docs/
 
 ## QMD
 
-QMD is a derived retrieval/indexing layer over the Markdown wiki. It does not replace the wiki, `docs/wiki/index.md`, or the Markdown files as source of truth.
+QMD provides the derived search/index layer over the canonical Markdown wiki. APM exposes it through MCP via `npx`; the project-local `.qmd/` state is disposable and should be gitignored.
 
-The APM package declares QMD as an MCP dependency and configures the runtime to launch it through `npx`. This makes QMD available without requiring a global `qmd` executable.
-
-QMD is initialized locally for each repository. `qmd init` creates `.qmd/index.yml` and `.qmd/index.sqlite`, and the `wiki` collection indexes only `docs/wiki/`.
-
-The local `.qmd/` directory is disposable machine-local state. It is not canonical project knowledge and should not be committed to Git. Add `.qmd/` to the consuming project's `.gitignore`.
-
-### Automatic synchronization
-
-The package ships an APM-native `Stop` hook. At the end of agent activity, the hook computes a deterministic fingerprint of the Markdown files under `docs/wiki/` and compares it with the last successfully synchronized fingerprint stored in `.qmd/wiki-sync.sha256`.
-
-If the wiki did not change, the hook exits without invoking QMD. If it changed, the hook runs:
-
-```bash
-npx -y @tobilu/qmd update
-npx -y @tobilu/qmd embed
-```
-
-Both QMD operations are incremental. The new fingerprint is recorded only after both operations complete successfully.
-
-The hook is distributed as an APM hook primitive rather than being implemented in the LLM prompt. Agent runtimes without APM hook support can explicitly synchronize QMD with:
+Synchronization is incremental. On runtimes supporting APM hooks, the packaged `Stop` hook refreshes QMD only when `docs/wiki/` changed. Other runtimes can explicitly run:
 
 ```text
 /llm-wiki-index
 ```
 
-The `/llm-wiki-init` prompt does not create QMD collections or run indexing/embedding commands. Its responsibility is the Markdown wiki structure and project knowledge bootstrap.
-
-QMD currently requires Node.js 22 or newer. If the MCP server fails to start, verify `node --version` before troubleshooting the agent runtime or APM configuration.
+The `/llm-wiki-init` command only bootstraps the Markdown wiki; QMD initialization remains an explicit CLI setup step as shown above.
 
 ## Design principles
 
