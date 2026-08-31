@@ -25,6 +25,6 @@ Transient conversation, exploratory reasoning, temporary command output, scratch
 
 Before creating a new documentation location, check whether the information belongs in the existing wiki. Prefer evolving the wiki over creating a second persistent knowledge system.
 
-After an INGEST changes `docs/wiki/`, QMD synchronization is automatic when the current runtime supports the packaged APM `Stop` hook. On runtimes without hook support, run `/llm-wiki-index` explicitly.
+After an INGEST changes `docs/wiki/`, QMD synchronization is automatic when the current runtime supports the packaged APM `Stop` hook. On runtimes without hook support, use the explicit QMD indexing fallback available for that runtime, such as `/llm-wiki-index` when packaged slash prompts are supported or the equivalent QMD CLI refresh.
 
 QMD and other retrieval indexes are derived access layers. They do not replace the Markdown wiki or `docs/wiki/index.md` as the canonical navigation map.
