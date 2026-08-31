@@ -12,7 +12,7 @@ This skill defines the behavior for an LLM-maintained wiki: a persistent, human-
 
 The normal workflow is simple: users or agents place raw resources in `docs/input/`, then ask the agent to ingest the new inputs. The agent maintains `docs/wiki/` by synthesizing useful knowledge, preserving provenance, updating the index, and recording the ingestion. Users should not normally need to edit wiki pages directly.
 
-After the wiki changes, QMD synchronization is automatic when the current runtime supports the packaged `Stop` hook. On runtimes without hook support, run `/llm-wiki-index` explicitly.
+After the wiki changes, QMD synchronization is automatic when the current runtime supports the packaged `Stop` hook. On runtimes without hook support, `/llm-wiki-index` is the explicit synchronization fallback when slash prompts are supported; otherwise run the equivalent QMD CLI commands documented by the project.
 
 Input material remains available as evidence, while the wiki stores durable synthesized knowledge, explicit relationships, provenance, a navigable index, and an append-only activity log.
 
@@ -29,6 +29,7 @@ The default conceptual model is defined in `references/default-ontology.md`.
 7. **Ontology is project-specific** — use the default ontology as a starting point, then respect any project-local ontology that supersedes it.
 8. **Index first** — `docs/wiki/index.md` is the primary entry point into the accumulated wiki.
 9. **Keep an activity trail** — record INGEST, QUERY, and LINT operations in `docs/wiki/log.md`.
+10. **Current filesystem is authoritative** — operate on the files that currently exist in the working tree. Do not restore, reconstruct, or merge wiki content from Git history, `HEAD`, another branch, or deleted files unless the user explicitly asks for that recovery.
 
 ## Default Repository Structure
 
@@ -63,7 +64,7 @@ Default paths:
 
 If `docs/ontology/ontology.md` exists, treat it as authoritative. Otherwise use `references/default-ontology.md`.
 
-If required directories or the index/log are missing, initialize them automatically before the first INGEST. Do not create a local ontology merely to initialize the wiki.
+The repository structure and QMD index are expected to be bootstrapped deterministically before normal use. If required directories or `docs/wiki/index.md` / `docs/wiki/log.md` are missing, report the incomplete bootstrap instead of attempting to recover prior versions from Git history.
 
 ## Knowledge Discovery and Indexing
 
@@ -79,38 +80,42 @@ Any external search index must be treated as derived and rebuildable. It must no
 
 ### INGEST
 
-1. Ensure `docs/wiki/index.md` and `docs/wiki/log.md` exist.
+1. Verify that `docs/wiki/index.md` and `docs/wiki/log.md` exist in the current filesystem.
 2. Read the active ontology.
-3. Read `docs/wiki/index.md` first.
-4. Inspect new or changed material in `docs/input/` and identify the knowledge it contributes.
-5. Locate existing pages covering the same concepts or topics.
+3. Read the current `docs/wiki/index.md` first.
+4. Inspect new or changed material currently present in `docs/input/` and identify the knowledge it contributes.
+5. Locate currently existing wiki pages covering the same concepts or topics.
 6. Integrate into existing pages whenever possible.
 7. Create a new page only for genuinely new knowledge that deserves its own durable representation.
 8. Record provenance for non-trivial claims.
-9. Add/update cross-links.
-10. Update the index.
-11. Append a concise INGEST log entry.
+9. Add/update cross-links only to pages and inputs that currently exist, unless a deliberately unresolved reference is clearly marked as such.
+10. Update the current index.
+11. Append a concise INGEST log entry to the current log.
 
 Do not merely summarize each input into a new file.
 
-After INGEST changes `docs/wiki/`, do not manually run QMD synchronization when the current runtime supports the packaged `Stop` hook; the hook handles it automatically. If the runtime does not support the hook, run `/llm-wiki-index` explicitly.
+Do not use `git show`, `git checkout`, `git restore`, another branch, a previous commit, or any other Git history source to repopulate the wiki during normal INGEST. A file deleted or replaced in the current working tree is absent by design unless the user explicitly requests recovery.
+
+After INGEST changes `docs/wiki/`, do not manually run QMD synchronization when the current runtime supports the packaged `Stop` hook; the hook handles it automatically. If the runtime does not support the hook, use `/llm-wiki-index` when supported or run the equivalent documented QMD CLI refresh explicitly.
 
 ### QUERY
 
-1. Start with `docs/wiki/index.md`.
+1. Start with the current `docs/wiki/index.md`.
 2. Discover relevant knowledge using the index, links, repository search, and available retrieval tools.
 3. Read authoritative Markdown pages rather than relying on search-result snippets or derived indexes.
 4. Traverse related pages when needed.
-5. Consult `docs/input/` for provenance, ambiguity, or missing detail.
+5. Consult current `docs/input/` for provenance, ambiguity, or missing detail.
 6. Distinguish established knowledge from inference or unresolved uncertainty.
 7. Reuse accumulated synthesis rather than rebuilding it from scratch.
 8. Append a concise QUERY log entry when the query materially uses or tests the wiki.
 
 ### LINT
 
-Check for duplicate/overlapping pages, contradictions, orphan pages, broken or weak links, unsupported claims, stale summaries, ontology drift, inconsistent naming, and missing/stale index entries.
+Check the current wiki for duplicate/overlapping pages, contradictions, orphan pages, broken or weak links, unsupported claims, stale summaries, ontology drift, inconsistent naming, and missing/stale index entries.
 
 Repair safe structural issues directly. Record unresolved semantic conflicts explicitly. Append a concise LINT log entry.
+
+Do not restore deleted content from Git history as part of LINT unless explicitly asked.
 
 ### EVOLVE ONTOLOGY
 
@@ -120,9 +125,10 @@ Only evolve the ontology when the current model repeatedly fails to represent ac
 
 - Never delete input evidence solely because its knowledge was synthesized.
 - Never fabricate provenance.
-- Never create a new page when an existing page can be coherently extended.
-- Never rewrite or truncate existing `docs/wiki/log.md` history.
-- Keep `docs/wiki/index.md` concise and synchronized.
+- Never create a new page when an existing current page can be coherently extended.
+- Never rewrite or truncate existing `docs/wiki/log.md` history that is present in the current filesystem.
+- Never restore wiki content from Git history unless the user explicitly requests recovery.
+- Keep `docs/wiki/index.md` concise and synchronized with the current filesystem.
 - Treat external indexes as derived, disposable access layers.
 - Do not make wiki validity depend on QMD or another retrieval engine.
 - Keep ontology concepts few and composable.
