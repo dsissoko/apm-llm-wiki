@@ -22,11 +22,11 @@ From the repository you want to equip with an LLM Wiki:
 # 1. Install the APM package
 apm install dsissoko/apm-llm-wiki
 
-# 2. Initialize the QMD collection for this repository
-# Replace <repo> with a stable name for the current repository.
-npx -y @tobilu/qmd collection add docs/wiki --name <repo>-wiki \
-  && npx -y @tobilu/qmd update \
-  && npx -y @tobilu/qmd embed
+# 2. Initialize the project-local QMD index
+npx -y @tobilu/qmd init
+npx -y @tobilu/qmd collection add docs/wiki --name wiki
+npx -y @tobilu/qmd update
+npx -y @tobilu/qmd embed
 
 # 3. Launch your agent (e.g. OpenCode)
 opencode
@@ -59,7 +59,8 @@ The package provides:
 - a reusable `llm-wiki` skill for INGEST / QUERY / LINT workflows;
 - a `/llm-wiki-init` command that bootstraps the wiki structure in the current repository;
 - project-wide wiki governance instructions so durable project knowledge is persisted through the wiki rather than scattered across ad-hoc documentation;
-- QMD exposed through MCP as the retrieval/indexing layer used by the wiki.
+- QMD exposed through MCP as the retrieval/indexing layer used by the wiki;
+- a project-local QMD index in `.qmd/`, with the `wiki` collection restricted to `docs/wiki/`. QMD may store an absolute local path in this configuration; `.qmd/` is machine-local state and should therefore be added to the consuming project's `.gitignore` rather than committed.
 
 ## What gets initialized
 
@@ -84,15 +85,16 @@ QMD is a derived retrieval/indexing layer over the Markdown wiki. It does not re
 
 The APM package declares QMD as an MCP dependency and configures the runtime to launch it through `npx`. This makes QMD available without requiring a global `qmd` executable.
 
-QMD initialization is intentionally explicit and deterministic. After installing the APM package, initialize the repository collection from the repository root:
+QMD is initialized locally for each repository. `qmd init` creates `.qmd/index.yml` and `.qmd/index.sqlite`, and the `wiki` collection indexes only `docs/wiki/`.
+
+The local `.qmd/` directory is disposable machine-local state. It is not canonical project knowledge and should not be committed to Git. Add `.qmd/` to the consuming project's `.gitignore`.
+
+To refresh the local index after wiki changes:
 
 ```bash
-npx -y @tobilu/qmd collection add docs/wiki --name <repo>-wiki \
-  && npx -y @tobilu/qmd update \
-  && npx -y @tobilu/qmd embed
+npx -y @tobilu/qmd update
+npx -y @tobilu/qmd embed
 ```
-
-Replace `<repo>` with a stable name for the current repository.
 
 The `/llm-wiki-init` prompt does not create QMD collections or run indexing/embedding commands. Its responsibility is the Markdown wiki structure and project knowledge bootstrap.
 
@@ -107,8 +109,9 @@ QMD currently requires Node.js 22 or newer. If the MCP server fails to start, ve
 - `docs/wiki/index.md` remains the canonical navigation map.
 - QMD indexes are derived and rebuildable.
 - **QMD is runtime-managed, not globally installed.** APM configures the MCP integration; `npx` resolves and executes QMD on demand. QMD may be cached by npm, but no global `qmd` executable is required.
-- **QMD initialization is explicit.** Collection creation, indexing and embedding are performed with the documented CLI command before launching the agent runtime.
-- Initialization is idempotent and must not destroy existing project knowledge.
+- **QMD state is repository-local and disposable.** `.qmd/` contains local configuration and the derived index, may contain machine-specific absolute paths, and should be gitignored.
+- **QMD initialization is explicit.** Local initialization, collection creation, indexing and embedding are performed with the documented CLI commands before launching the agent runtime.
+- Wiki initialization is idempotent and must not destroy existing project knowledge.
 
 ## Status
 
