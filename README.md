@@ -2,7 +2,7 @@
 
 Turn any existing repository into a persistent, agent-maintained knowledge wiki.
 
-**Drop raw resources into `docs/input/`, then ask the agent to ingest the new inputs. The agent maintains `docs/wiki/` for you.** It synthesizes useful knowledge, preserves provenance, updates the wiki index, and records the ingestion. QMD indexing is automatic when the runtime supports the packaged `Stop` hook; on runtimes without hook support, `/llm-wiki-index` is the explicit synchronization fallback when slash prompts are supported.
+**Drop raw resources into `docs/input/`, then ask the agent to ingest the new inputs. The agent maintains `docs/wiki/` for you.** It synthesizes useful knowledge, preserves provenance, updates the wiki index, and records the ingestion. QMD indexing is automatic when the runtime supports the packaged `Stop` hook; otherwise it can be refreshed explicitly.
 
 ```text
 Drop or create resources in docs/input/
@@ -13,7 +13,7 @@ Drop or create resources in docs/input/
                 ↓
            QMD indexing
            ├─ Stop hook → automatic
-           └─ No hook   → explicit index refresh
+           └─ No hook   → manual index refresh
 ```
 
 This project has two goals:
@@ -33,9 +33,9 @@ Prerequisites:
 From the repository you want to equip with an LLM Wiki:
 
 ```bash
-# 1. Install the APM package for Codex
-apm install dsissoko/apm-llm-wiki --target codex
-apm compile --target codex
+# 1. Install the APM package for your agent
+apm install dsissoko/apm-llm-wiki --target <your-agent>
+apm compile --target <your-agent>
 
 # 2. Create the canonical wiki structure
 mkdir -p docs/{input,ontology,wiki/runbooks} && touch docs/wiki/{index.md,log.md}
@@ -46,17 +46,18 @@ npx -y @tobilu/qmd collection add docs/wiki --name wiki
 npx -y @tobilu/qmd update
 npx -y @tobilu/qmd embed
 
-# 4. Launch Codex
-codex
+# 4. Launch your agent
 ```
 
 The bootstrap is intentionally CLI-driven and deterministic. The agent is not responsible for creating the repository structure or initializing QMD.
 
-After that, normal usage is simple:
+## Use your agent
+
+Normal usage is simple:
 
 ```text
 Create or drop resources in docs/input/
-Ask the agent to ingest them
+Ask your agent to ingest them
 Query or lint the wiki in natural language
 ```
 
@@ -68,6 +69,17 @@ The package provides:
 - an APM-native `Stop` hook that automatically synchronizes QMD after agent activity when `docs/wiki/` actually changed;
 - a single optional `/llm-wiki-index` prompt for runtimes that support packaged slash prompts and do not run the Stop hook;
 - a project-local QMD index in `.qmd/`, with the `wiki` collection restricted to `docs/wiki/`. `.qmd/` is machine-local state and should not be committed.
+
+## Manual indexing
+
+If you use OpenCode or any other agent/runtime that does not support the packaged `Stop` hook, refresh QMD after wiki changes:
+
+```bash
+npx -y @tobilu/qmd update
+npx -y @tobilu/qmd embed
+```
+
+If the runtime supports packaged slash prompts, `/llm-wiki-index` provides the same explicit refresh as a convenience.
 
 ## What gets initialized
 
@@ -93,7 +105,7 @@ Normal wiki operations use natural language through the `llm-wiki` skill:
 - QUERY: ask a question that should use the wiki knowledge base;
 - LINT: ask the agent to check wiki consistency.
 
-`/llm-wiki-index` is the only optional slash prompt. It refreshes QMD explicitly on runtimes that support packaged prompts but do not execute the Stop hook. On Codex, the Stop hook normally makes this unnecessary.
+`/llm-wiki-index` is the only optional slash prompt. It refreshes QMD explicitly on runtimes that support packaged prompts but do not execute the Stop hook.
 
 ## Design principles
 
