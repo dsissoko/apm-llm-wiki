@@ -28,11 +28,11 @@ npx -y @tobilu/qmd collection add docs/wiki --name <repo>-wiki \
   && npx -y @tobilu/qmd update \
   && npx -y @tobilu/qmd embed
 
-# 3. Launch OpenCode
+# 3. Launch your agent (e.g. OpenCode)
 opencode
 ```
 
-Then, inside OpenCode:
+Then, inside your agent:
 
 ```text
 /llm-wiki-init
@@ -96,7 +96,7 @@ Replace `<repo>` with a stable name for the current repository.
 
 The `/llm-wiki-init` prompt does not create QMD collections or run indexing/embedding commands. Its responsibility is the Markdown wiki structure and project knowledge bootstrap.
 
-QMD currently requires Node.js 22 or newer. If the MCP server fails to start, verify `node --version` before troubleshooting the OpenCode or APM configuration.
+QMD currently requires Node.js 22 or newer. If the MCP server fails to start, verify `node --version` before troubleshooting the agent runtime or APM configuration.
 
 ## Design principles
 
