@@ -11,7 +11,12 @@ This project has two goals:
 
 ## Install
 
-Install Microsoft APM, then install this package in the repository you want to equip with an LLM Wiki:
+Prerequisites:
+
+- Microsoft APM;
+- Node.js/npm, so the QMD MCP server can be launched through `npx` without a separate global QMD installation.
+
+Install this package in the repository you want to equip with an LLM Wiki:
 
 ```bash
 # Install APM (macOS / Linux)
@@ -20,6 +25,14 @@ curl -sSL https://aka.ms/apm-unix | sh
 # From your project repository
 apm install dsissoko/apm-llm-wiki
 ```
+
+QMD does not need to be installed globally. The package configures the MCP runtime to launch it with:
+
+```bash
+npx -y @tobilu/qmd mcp
+```
+
+`npx` downloads QMD when needed and reuses the npm cache on subsequent runs.
 
 ## Example with OpenCode
 
@@ -61,7 +74,7 @@ docs/
 
 QMD is a derived retrieval/indexing layer over the Markdown wiki. It does not replace the wiki, `docs/wiki/index.md`, or the Markdown files as source of truth.
 
-The APM package declares QMD as an MCP dependency. QMD provisioning therefore belongs to the package/runtime setup, not to `/llm-wiki-init`.
+The APM package declares QMD as an MCP dependency and configures the runtime to launch it through `npx`. This makes QMD available without requiring a separate global `qmd` executable, while keeping QMD provisioning outside `/llm-wiki-init`.
 
 The initialization command prepares QMD for the current wiki: it identifies `docs/wiki/` as the corpus, creates or reuses the corresponding collection when supported by the environment, refreshes the index and embeddings when appropriate, and records the operational procedure in `docs/wiki/runbooks/qmd.md`.
 
